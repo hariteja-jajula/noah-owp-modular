@@ -1102,23 +1102,66 @@ contains
      end select
    end function noahowp_get_ptr_int
 
-   ! Get a reference to a real-valued variable, flattened.
-   function noahowp_get_ptr_float(this, name, dest_ptr) result (bmi_status)
-     class (bmi_noahowp), intent(in) :: this
-     character (len=*), intent(in) :: name
-     real, pointer, intent(inout) :: dest_ptr(:)
+      ! Get a reference to a real-valued variable, flattened.
+   function noahowp_get_ptr_float(this, name, dest_ptr) result(bmi_status)
+     class(bmi_noahowp), intent(in) :: this
+     character(len=*), intent(in) :: name
+     real(kind=kind_phys), pointer, intent(out) :: dest_ptr(:)
      integer :: bmi_status
-     type (c_ptr) :: src
-     integer :: n_elements
-
-     select case(name)
+   
+     select case(trim(name))
+     case('SFCPRS')
+       dest_ptr => this%model%forcing%sfcprs
+       bmi_status = BMI_SUCCESS
+     case('SFCTMP')
+       dest_ptr => this%model%forcing%sfctmp
+       bmi_status = BMI_SUCCESS
+     case('SOLDN')
+       dest_ptr => this%model%forcing%soldn
+       bmi_status = BMI_SUCCESS
+     case('LWDN')
+       dest_ptr => this%model%forcing%lwdn
+       bmi_status = BMI_SUCCESS
+     case('UU')
+       dest_ptr => this%model%forcing%uu
+       bmi_status = BMI_SUCCESS
+     case('VV')
+       dest_ptr => this%model%forcing%vv
+       bmi_status = BMI_SUCCESS
+     case('Q2')
+       dest_ptr => this%model%forcing%q2
+       bmi_status = BMI_SUCCESS
+     case('PRCPNONC')
+       dest_ptr => this%model%forcing%prcpnonc
+       bmi_status = BMI_SUCCESS
+     case('QINSUR')
+       dest_ptr => this%model%water%qinsur
+       bmi_status = BMI_SUCCESS
+     case('ETRAN')
+       dest_ptr => this%model%water%etran
+       bmi_status = BMI_SUCCESS
+     case('QSEVA')
+       dest_ptr => this%model%water%qseva
+       bmi_status = BMI_SUCCESS
+     case('EVAPOTRANS')
+       dest_ptr => this%model%water%evapotrans
+       bmi_status = BMI_SUCCESS
+     case('TG')
+       dest_ptr => this%model%energy%tg
+       bmi_status = BMI_SUCCESS
+     case('SNEQV')
+       dest_ptr => this%model%water%sneqv
+       bmi_status = BMI_SUCCESS
+     case('TGS')
+       dest_ptr => this%model%energy%tgs
+       bmi_status = BMI_SUCCESS
      case default
-        bmi_status = BMI_FAILURE
+       dest_ptr => null()
+       bmi_status = BMI_FAILURE
      end select
-
-     call c_f_pointer(src, dest_ptr, [n_elements])
-
+   
    end function noahowp_get_ptr_float
+
 
    ! Get a reference to an double-valued variable, flattened.
    function noahowp_get_ptr_double(this, name, dest_ptr) result (bmi_status)
