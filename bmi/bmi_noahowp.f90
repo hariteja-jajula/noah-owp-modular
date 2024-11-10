@@ -87,9 +87,8 @@ module bminoahowp
            set_value_at_indices_int, &
            set_value_at_indices_float, &
            set_value_at_indices_double
-!     procedure :: print_model_info
   end type bmi_noahowp
-
+  
   private
   public :: bmi_noahowp
 
@@ -194,24 +193,39 @@ contains
     class (bmi_noahowp), intent(out) :: this
     character (len=*), intent(in) :: config_file
     integer :: bmi_status
+    real :: start_time, end_time, elapsed_time
 
-    if (len(config_file) > 0) then
+    call cpu_time(start_time)
+
+    if (len(trim(config_file)) > 0) then
        call initialize_from_file(this%model, config_file)
     else
        !call initialize_from_defaults(this%model)
     end if
     bmi_status = BMI_SUCCESS
+
+    call cpu_time(end_time)
+    elapsed_time = end_time - start_time
+    print *, 'Time for noahowp_initialize:', elapsed_time, ' seconds'
   end function noahowp_initialize
 
   ! BMI finalizer.
   function noahowp_finalize(this) result (bmi_status)
     class (bmi_noahowp), intent(inout) :: this
     integer :: bmi_status
+    real :: start_time, end_time, elapsed_time
+
+    call cpu_time(start_time)
 
     call cleanup(this%model)
     bmi_status = BMI_SUCCESS
+
+    call cpu_time(end_time)
+    elapsed_time = end_time - start_time
+    print *, 'Time for noahowp_finalize:', elapsed_time, ' seconds'
   end function noahowp_finalize
 
+  
   ! Model start time.
   function noahowp_start_time(this, time) result (bmi_status)
     class (bmi_noahowp), intent(in) :: this
@@ -266,9 +280,16 @@ contains
   function noahowp_update(this) result (bmi_status)
     class (bmi_noahowp), intent(inout) :: this
     integer :: bmi_status
+    real :: start_time, end_time, elapsed_time
+
+    call cpu_time(start_time)
 
     call advance_in_time(this%model)
     bmi_status = BMI_SUCCESS
+
+    call cpu_time(end_time)
+    elapsed_time = end_time - start_time
+    print *, 'Time for noahowp_update:', elapsed_time, ' seconds'
   end function noahowp_update
 
   ! Advance the model until the given time.
@@ -278,6 +299,9 @@ contains
     integer :: bmi_status
     double precision :: n_steps_real
     integer :: n_steps, i, s
+    real :: start_time, end_time, elapsed_time
+
+    call cpu_time(start_time)
 
     if (time < this%model%domain%time_dbl) then
        bmi_status = BMI_FAILURE
@@ -289,10 +313,14 @@ contains
     do i = 1, n_steps
        s = this%update()
     end do
-!     call update_frac(this, n_steps_real - dble(n_steps)) ! NOT IMPLEMENTED
+    ! call update_frac(this, n_steps_real - dble(n_steps)) ! NOT IMPLEMENTED
     bmi_status = BMI_SUCCESS
-  end function noahowp_update_until
 
+    call cpu_time(end_time)
+    elapsed_time = end_time - start_time
+    print *, 'Time for noahowp_update_until:', elapsed_time, ' seconds'
+  end function noahowp_update_until
+  
   ! Get the grid id for a particular variable.
   function noahowp_var_grid(this, name, grid) result (bmi_status)
     class (bmi_noahowp), intent(in) :: this
@@ -910,7 +938,9 @@ contains
     integer :: bmi_status
     real    :: mm2m = 0.001       ! unit conversion mm to m     
     real    :: m2mm = 1000.       ! unit conversion m to mm
-
+    
+    call cpu_time(start_time)
+    
     associate(forcing    => this%model%forcing,   &
               water      => this%model%water,     &
               energy     => this%model%energy,    &
@@ -1067,6 +1097,10 @@ contains
        bmi_status = BMI_FAILURE
     end select
     end associate
+
+    call cpu_time(end_time)
+    elapsed_time = end_time - start_time
+    print *, 'Time for noahowp_get_float (', trim(name), '):', elapsed_time, ' seconds'
     ! NOTE, if vars are gridded, then use:
     ! dest = reshape(this%model%temperature, [this%model%n_x*this%model%n_y]) 
   end function noahowp_get_float
@@ -1096,10 +1130,15 @@ contains
      type (c_ptr) :: src
      integer :: n_elements
 
+     call cpu_time(start_time)
      select case(name)
      case default
         bmi_status = BMI_FAILURE
      end select
+     call cpu_time(end_time)
+    elapsed_time = end_time - start_time
+    print *, 'Time for noahowp_get_ptr_int (', trim(name), '):', elapsed_time, ' seconds'
+
    end function noahowp_get_ptr_int
 
    ! Get a reference to a real-valued variable, flattened.
@@ -1110,14 +1149,17 @@ contains
      integer :: bmi_status
      type (c_ptr) :: src
      integer :: n_elements
-
+     
+     call cpu_time(start_time)
      select case(name)
      case default
         bmi_status = BMI_FAILURE
      end select
 
      call c_f_pointer(src, dest_ptr, [n_elements])
-
+     call cpu_time(end_time)
+     elapsed_time = end_time - start_time
+     print *, 'Time for noahowp_set_float (', trim(name), '):', elapsed_time, ' seconds'
    end function noahowp_get_ptr_float
 
    ! Get a reference to an double-valued variable, flattened.
