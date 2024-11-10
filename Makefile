@@ -1,30 +1,28 @@
 # Makefile 
 #
+.SUFFIXES:
+.SUFFIXES: .o .f90
 
-# Define profiling flags
-PROFILE_FLAGS = -pg
-
-# Pass the profile flag to each subdirectory make command
 all: user_build_options
-	(cd src;        make FCFLAGS="$(PROFILE_FLAGS)")
-	(cd bmi;        make FCFLAGS="$(PROFILE_FLAGS)")
-	(cd driver;     make FCFLAGS="$(PROFILE_FLAGS)")
-	(cd run;        make FCFLAGS="$(PROFILE_FLAGS)")
+	(cd src;		make)
+	(cd bmi;		make)
+	(cd driver;		make)
+	(cd run;		make)
 
 clean:
-	(cd src;        make clean)
-	(cd bmi;        make clean)
-	(cd driver;     make clean)
-	(cd run;        make clean)
+	(cd src;		make clean)
+	(cd bmi;		make clean)
+	(cd driver;		make clean)
+	(cd run;		make clean)
 
 testBMI:
-	(cd src;        make FCFLAGS="$(PROFILE_FLAGS)")
-	(cd bmi;        make FCFLAGS="$(PROFILE_FLAGS)")
-	(cd driver;     make FCFLAGS="$(PROFILE_FLAGS)")
-	(cd test;       make FCFLAGS="$(PROFILE_FLAGS)")
+	(cd src;		make)
+	(cd bmi;		make)
+	(cd driver;		make)
+	(cd test;		make)
 
 testBMI_clean:
-	(cd src;        make clean)
-	(cd bmi;        make clean)
-	(cd driver;     make clean)
-	(cd test;       make clean)
+	(cd src;		make clean)
+	(cd bmi;		make clean)
+	(cd driver;		make clean)
+	(cd test;		make clean)
