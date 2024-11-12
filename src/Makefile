@@ -3,7 +3,7 @@
 .SUFFIXES:
 .SUFFIXES: .o .f90
 
-include ../user_build_options
+#include ../user_build_options
 
 F90FLAGS := -cpp ${F90FLAGS}
 
