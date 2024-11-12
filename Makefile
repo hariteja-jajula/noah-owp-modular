@@ -4,7 +4,7 @@
 PROFILE_FLAGS = -pg
 
 # Pass the profile flag to each subdirectory make command
-all: user_build_options
+all:
 	@echo "Building in src directory with profiling flags..."
 	(cd src; make FCFLAGS="$(PROFILE_FLAGS)")
 	@echo "Building in bmi directory with profiling flags..."
@@ -13,6 +13,7 @@ all: user_build_options
 	(cd driver; make FCFLAGS="$(PROFILE_FLAGS)")
 	@echo "Building in run directory with profiling flags..."
 	(cd run; make FCFLAGS="$(PROFILE_FLAGS)")
+
 
 clean:
 	@echo "Cleaning up in src directory..."
